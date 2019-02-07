@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from macro import Macro, MacroEngine
 import subprocess
-import psutil
+import psutil, sys
 from pynput import keyboard
 
 
@@ -15,7 +15,10 @@ class Launch(Macro):
 
     def action(self):
         if self.procname not in (p.name for p in psutil.process_iter()):
-            self.pid = subprocess.Popen(self.command).pid
+            if sys.platform.startswith("win"):
+                self.pid = subprocess.Popen(self.command, creationflags=0x00000008).pid
+            else:
+                self.pid = subprocess.Popen(self.command).pid
         return True
 
 
